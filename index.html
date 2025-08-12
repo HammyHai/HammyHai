@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mein Geschenk für Laura</title>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg1: #0f1724;
+    --bg2: #1a2840;
+    --card: #0b1220;
+    --accent: #ffd700;
+    --accent2: #ff9a9e;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: radial-gradient(circle at top left, var(--bg2), var(--bg1));
+    color: #e6eef8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+  .container {
+    max-width: 900px;
+    padding: 32px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+  h1 {
+    font-family: 'Great Vibes', cursive;
+    font-size: 3rem;
+    margin: 0 0 20px;
+    color: var(--accent);
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+  }
+  .card {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 28px;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(2, 6, 23, 0.6);
+    backdrop-filter: blur(6px);
+  }
+  .gift-btn {
+    display: inline-flex;
+    gap: 12px;
+    align-items: center;
+    padding: 14px 22px;
+    border-radius: 30px;
+    border: none;
+    background: linear-gradient(45deg, var(--accent), var(--accent2));
+    color: #1a1a1a;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1.1rem;
+    transition: transform 0.2s;
+  }
+  .gift-btn:hover {
+    transform: scale(1.05);
+  }
+  .gift-emoji {
+    font-size: 1.4rem;
+  }
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.85);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+  .overlay.show {
+    display: flex;
+  }
+  .modal {
+    background: var(--card);
+    padding: 18px;
+    border-radius: 20px;
+    max-width: 880px;
+    width: 92%;
+    max-height: 86vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(2, 6, 23, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: pop 0.3s ease forwards;
+  }
+  @keyframes pop {
+    from {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  .modal img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+    margin-bottom: 12px;
+  }
+  .close {
+    align-self: flex-end;
+    background: transparent;
+    border: 0;
+    color: #fff;
+    font-size: 1.6rem;
+    cursor: pointer;
+    padding: 6px;
+    margin-bottom: 8px;
+  }
+  @media (max-width: 520px) {
+    h1 {
+      font-size: 2.3rem;
+    }
+    .gift-btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Mein Geschenk für Laura</h1>
+      <p style="opacity: 0.85; margin: 0 0 18px;">
+        Klicke auf den Button, um dein Geschenk zu öffnen.
+      </p>
+      <button class="gift-btn" id="openGift" aria-haspopup="dialog" aria-controls="overlay">
+        <span class="gift-emoji">🎁</span>
+        <span>Geschenk öffnen</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document">
+      <button class="close" id="closeBtn" aria-label="Schließen">✕</button>
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/e/e1/Elbphilharmonie_Hamburg.jpg"
+        alt="Elbphilharmonie, Hamburg"
+      />
+      <audio id="audioPlayer" src="https://cdn.pixabay.com/download/audio/2021/12/15/audio_5e8c50303a.mp3?filename=perfect-ed-sheeran-ukulele-cover-9430.mp3" preload="auto"></audio>
+    </div>
+  </div>
+
+  <script>
+    const openBtn = document.getElementById('openGift');
+    const overlay = document.getElementById('overlay');
+    const closeBtn = document.getElementById('closeBtn');
+    const audio = document.getElementById('audioPlayer');
+
+    openBtn.addEventListener('click', () => {
+      overlay.style.display = 'flex';
+      overlay.setAttribute('aria-hidden', 'false');
+      audio.currentTime = 0;
+      audio.play().catch(() => {
+        console.log('Autoplay blockiert – Nutzerinteraktion nötig.');
+      });
+    });
+
+    function closeModal() {
+      overlay.style.display = 'none';
+      overlay.setAttribute('aria-hidden', 'true');
+      audio.pause();
+      audio.currentTime = 0;
+    }
+
+    closeBtn.addEventListener('click', closeModal);
+
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && overlay.style.display === 'flex') closeModal();
+    });
+  </script>
+</body>
+</html>
